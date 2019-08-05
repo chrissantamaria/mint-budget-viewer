@@ -3,15 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "carlo": "^0.9.46",
+    "progress": "^2.0.3",
+    "puppeteer-core": "^1.18.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1"
   },
+  "devDependencies": {
+    "concurrently": "^4.1.1",
+    "cross-env": "^5.2.0",
+    "nodemon": "^1.19.1",
+    "wait-on": "^3.3.0"
+  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "node app",
+    "dev:server": "cross-env NODE_ENV=development nodemon app --watch app.js --watch server",
+    "dev:client": "cross-env BROWSER=none react-scripts start",
+    "dev": "concurrently \"yarn run dev:client\" \"wait-on tcp:3000 && yarn run dev:server\"",
+    "build": "react-scripts build"
   },
   "eslintConfig": {
     "extends": "react-app"
