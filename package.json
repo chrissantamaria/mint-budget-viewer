@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "carlo": "^0.9.46",
+    "csvtojson": "^2.0.10",
     "progress": "^2.0.3",
     "puppeteer-core": "^1.18.1",
     "react": "^16.8.6",

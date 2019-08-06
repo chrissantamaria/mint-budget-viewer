@@ -1,7 +1,15 @@
 const puppeteer = require('puppeteer-core');
 const querystring = require('querystring');
+const path = require('path');
+const csv = require('csvtojson');
+const fs = require('fs').promises;
 
 const getTransactions = async () => {
+  await downloadTransactions();
+  await parseTransactions();
+};
+
+const downloadTransactions = async () => {
   let browser = await puppeteer.launch({
     headless: false,
     args: [
@@ -59,7 +67,7 @@ const getTransactions = async () => {
 
   await page._client.send('Page.setDownloadBehavior', {
     behavior: 'allow',
-    downloadPath: __dirname
+    downloadPath: path.join(__dirname, '../data')
   });
   await Promise.all([
     page.click('#transactionExport'),
@@ -71,6 +79,25 @@ const getTransactions = async () => {
   console.log('CSV downloaded, closing browser');
 
   browser.close();
+};
+
+const parseTransactions = async () => {
+  let transactions = await csv().fromFile(
+    path.join(__dirname, '../data/transactions.csv')
+  );
+  console.log(`Read ${transactions.length} transactions from downloaded CSV`);
+
+  transactions = transactions.map(row => ({
+    date: new Date(row.Date),
+    description: row.Description,
+    amount: parseFloat(row.Amount)
+  }));
+
+  const data = { transactions, lastUpdated: new Date().toISOString() };
+  await fs.writeFile(
+    path.join(__dirname, '../data/transactions.json'),
+    JSON.stringify(data, null, 2)
+  );
 };
 
 module.exports = {
