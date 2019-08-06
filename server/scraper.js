@@ -93,10 +93,13 @@ const parseTransactions = async () => {
     amount: parseFloat(row.Amount)
   }));
 
-  const data = { transactions, lastUpdated: new Date().toISOString() };
+  const fileData = {
+    data: transactions,
+    lastUpdated: new Date().toISOString()
+  };
   await fs.writeFile(
     path.join(__dirname, '../data/transactions.json'),
-    JSON.stringify(data, null, 2)
+    JSON.stringify(fileData, null, 2)
   );
 };
 
