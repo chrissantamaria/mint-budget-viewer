@@ -6,7 +6,7 @@ const fs = require('fs').promises;
 
 const getTransactions = async () => {
   await downloadTransactions();
-  await parseTransactions();
+  return await parseAndSaveTransactions();
 };
 
 const downloadTransactions = async () => {
@@ -81,10 +81,7 @@ const downloadTransactions = async () => {
   browser.close();
 };
 
-const parseTransactions = async () => {
-  let transactions = await csv().fromFile(
-    path.join(__dirname, '../data/transactions.csv')
-  );
+const parseAndSaveTransactions = async () => {
   console.log(`Read ${transactions.length} transactions from downloaded CSV`);
 
   transactions = transactions.map(row => ({
