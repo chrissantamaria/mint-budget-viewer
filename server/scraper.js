@@ -1,14 +1,14 @@
 const puppeteer = require('puppeteer-core');
 const querystring = require('querystring');
 
-const getTransactions = async ({ executablePath }) => {
+const getTransactions = async () => {
   let browser = await puppeteer.launch({
     headless: false,
     args: [
       '--app=https://mint.intuit.com/overview.event',
       '--window-size=500,600'
     ],
-    executablePath
+    executablePath: process.env.CHROME_EXECUTABLE_PATH
   });
   let [page] = await browser.pages();
   await page.setViewport({ width: 500, height: 600 });
@@ -24,7 +24,9 @@ const getTransactions = async ({ executablePath }) => {
   await browser.close();
 
   // Launching new headless browser for scraping
-  browser = await puppeteer.launch({ executablePath });
+  browser = await puppeteer.launch({
+    executablePath: process.env.CHROME_EXECUTABLE_PATH
+  });
   [page] = await browser.pages();
   await page.setCookie(...cookies);
 
