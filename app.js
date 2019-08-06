@@ -16,14 +16,20 @@ const io = require('socket.io')(server);
   }
 
   // await getTransactions();
-  const transactions = JSON.parse(
+  let transactions = JSON.parse(
     await fs.readFile(path.join(__dirname, 'data/transactions.json')),
     'utf8'
   );
   console.log(`Loaded ${transactions.data.length} transactions`);
 
-  io.on('connection', client => {
-    client.emit('transactions', transactions);
+  io.on('connection', socket => {
+    socket.emit('transactions', transactions);
+
+    socket.on('getTransactions', async () => {
+      console.log('Client requested new transactions');
+      transactions = await getTransactions();
+      socket.emit('transactions', transactions);
+    });
   });
 
   server.listen(4200);

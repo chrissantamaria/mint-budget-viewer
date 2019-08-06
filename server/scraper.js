@@ -102,6 +102,8 @@ const parseAndSaveTransactions = async () => {
     path.join(__dirname, '../data/transactions.json'),
     JSON.stringify(fileData, null, 2)
   );
+
+  return fileData;
 };
 
 module.exports = {
