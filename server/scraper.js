@@ -25,6 +25,8 @@ const getTransactions = async () => {
 
   // Launching new headless browser for scraping
   browser = await puppeteer.launch({
+    // headless: false,
+    // defaultViewport: null,
     executablePath: process.env.CHROME_EXECUTABLE_PATH
   });
   [page] = await browser.pages();
@@ -40,6 +42,20 @@ const getTransactions = async () => {
   await page.goto(`https://mint.intuit.com/transaction.event?${query}`);
   await page.waitForSelector('#transactionExport');
   console.log('Reached transactions page');
+
+  // Waiting until Mint transactions are loaded
+  // (checking for .loading class every 300ms)
+  await page.evaluate(async () => {
+    await new Promise(resolve => {
+      const loop = setInterval(() => {
+        if (!document.querySelectorAll('.loading').length) {
+          clearInterval(loop);
+          resolve();
+        }
+      }, 300);
+    });
+  });
+  console.log('Mint finished loading transactions');
 
   await page._client.send('Page.setDownloadBehavior', {
     behavior: 'allow',
