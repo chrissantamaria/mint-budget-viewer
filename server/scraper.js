@@ -82,7 +82,11 @@ const downloadTransactions = async () => {
 };
 
 const parseAndSaveTransactions = async () => {
+  const csvPath = path.join(__dirname, '../data/transactions.csv');
+  let transactions = await csv().fromFile(csvPath);
   console.log(`Read ${transactions.length} transactions from downloaded CSV`);
+  // Not awaiting, no need to block
+  fs.unlink(csvPath);
 
   transactions = transactions.map(row => ({
     date: new Date(row.Date),
