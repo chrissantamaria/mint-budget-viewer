@@ -12,6 +12,7 @@ const getTransactions = async () => {
 const downloadTransactions = async () => {
   let browser = await puppeteer.launch({
     headless: false,
+    defaultViewport: null,
     args: [
       '--app=https://mint.intuit.com/overview.event',
       '--window-size=500,600'
@@ -19,7 +20,6 @@ const downloadTransactions = async () => {
     executablePath: process.env.CHROME_EXECUTABLE_PATH
   });
   let [page] = await browser.pages();
-  await page.setViewport({ width: 500, height: 600 });
 
   await page.waitForSelector('#ius-sign-in-wrapper');
   console.log('Reached sign in');
