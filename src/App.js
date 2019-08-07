@@ -40,7 +40,7 @@ const StyledButton = styled(Button)`
 
 function Content() {
   const [transactions, setTransactions] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [transactionsStatus, setTransactionsStatus] = useState(null);
   const [socket, setSocket] = useState(null);
 
@@ -49,11 +49,6 @@ function Content() {
     setSocket(socket);
 
     socket.on('transactions', data => {
-      setLoading(false);
-      setTimeout(() => {
-        setTransactionsStatus(null);
-      }, 2000);
-
       console.log({ ...data, lastUpdated: new Date(data.lastUpdated) });
       setTransactions({ ...data, lastUpdated: new Date(data.lastUpdated) });
     });
@@ -63,13 +58,20 @@ function Content() {
       setTransactionsStatus(status);
     });
 
+    socket.on('transactionsLoading', state => {
+      setLoading(state);
+      if (!state)
+        setTimeout(() => {
+          setTransactionsStatus(null);
+        }, 2000);
+    });
+
     return () => {
       socket.disconnect();
     };
   }, []);
 
   const getTransactions = () => {
-    setLoading(true);
     socket.emit('getTransactions');
   };
 

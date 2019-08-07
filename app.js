@@ -32,8 +32,22 @@ const io = require('socket.io')(server);
 
     socket.on('getTransactions', async () => {
       console.log('Client requested new transactions');
-      transactions = await getTransactions({ logStatus });
-      socket.emit('transactions', transactions);
+      socket.emit('transactionsLoading', true);
+      try {
+        transactions = await getTransactions({ logStatus });
+        socket.emit('transactions', transactions);
+      } catch (e) {
+        // Occurs when Puppeteer is closed
+        if (
+          e.message ===
+          'Protocol error (Runtime.callFunctionOn): Target closed.'
+        ) {
+          logStatus('Get transactions process cancelled');
+        } else {
+          logStatus(`Error: ${e.message}`);
+        }
+      }
+      socket.emit('transactionsLoading', false);
     });
   });
 
