@@ -1,68 +1,69 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Mint Budget Viewer
 
-## Available Scripts
+A web scraper for the personal finance platform Mint with a dynamic UI for displaying data. Uses [Carlo](https://github.com/GoogleChromeLabs/carlo) for displaying the React frontend and [Puppeteer](https://www.npmjs.com/package/puppeteer-core) for scraping.
 
-In the project directory, you can run:
+This project is still in development and is fairly bare as-is - feel free to submit an issue to request a specific feature (data display, additional scraping, etc).
 
-### `npm start`
+Requires Node 10+ for `fs` Promises support (can be replaced with something like [fs-extra](https://github.com/jprichardson/node-fs-extra)) and Yarn.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Usage
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+Install dependencies (not including a local copy of Chromium)
 
-### `npm test`
+```
+yarn
+```
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Build the frontend
 
-### `npm run build`
+```
+yarn build
+```
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Run the app
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+```
+yarn start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+This will start the Carlo-based frontend from which the Puppeteer scraper can be triggered.
 
-### `npm run eject`
+## Development
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Start a React development server
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+yarn run dev:client
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Start a Nodemon development server (also sets `NODE_ENV=development` so Carlo will display `localhost:3000` rather than the `build` folder)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
+yarn run dev:server
+```
 
-## Learn More
+Run both as a single task
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+yarn run dev
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Features
 
-### Code Splitting
+- Prefers existing Chrome installation for frontend + scraping (downloads local Chromium build to `node_modules` if necessary)
+- "Refresh Transactions" button to trigger new scrape of Mint data
+- Realtime status messages of scraping process
+- Filtering transactions by type and date (currently hardcoded into Mint query, can be added to frontend)
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+## Todo / Known bugs
 
-### Analyzing the Bundle Size
+- Handle `transactions.json` not existing on launch (currently throws error)
+- Do something meaningful with data on frontend
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+## Notes
 
-### Making a Progressive Web App
+For a more in-depth explanation of how Carlo + Puppeteer are used in this project, see [carlo-puppeteer-example](https://github.com/chrissantamaria/carlo-puppeteer-example).
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+Parsed transactions are saved to the `data` folder as `transactions.json`. Raw transactions from Mint are also downloaded to `data` as `transactions.csv` but should be deleted after being parsed.
 
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+`socket.io` is used for realtime client-server communication (sending new transactions, scraping status, etc).
