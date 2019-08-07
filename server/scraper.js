@@ -10,6 +10,7 @@ const getTransactions = async ({ logStatus }) => {
 };
 
 const downloadTransactions = async ({ logStatus }) => {
+  logStatus('Opening Mint authorization window');
   let browser = await puppeteer.launch({
     headless: false,
     defaultViewport: null,
