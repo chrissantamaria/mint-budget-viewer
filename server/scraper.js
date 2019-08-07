@@ -24,7 +24,7 @@ const downloadTransactions = async () => {
   await page.waitForSelector('#ius-sign-in-wrapper');
   console.log('Reached sign in');
   // Waiting for successful user authentication
-  await page.waitForSelector('#body-mint');
+  await page.waitForSelector('#body-mint', { timeout: 0 });
   console.log('Logged in');
 
   const cookies = await page.cookies();
