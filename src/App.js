@@ -5,7 +5,8 @@ import {
   Container,
   Typography,
   Button,
-  CircularProgress
+  CircularProgress,
+  Collapse
 } from '@material-ui/core';
 import io from 'socket.io-client';
 import { format as formatDate } from 'date-fns';
@@ -40,6 +41,7 @@ const StyledButton = styled(Button)`
 function Content() {
   const [transactions, setTransactions] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [transactionsStatus, setTransactionsStatus] = useState(null);
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
@@ -48,8 +50,17 @@ function Content() {
 
     socket.on('transactions', data => {
       setLoading(false);
+      setTimeout(() => {
+        setTransactionsStatus(null);
+      }, 2000);
+
       console.log({ ...data, lastUpdated: new Date(data.lastUpdated) });
       setTransactions({ ...data, lastUpdated: new Date(data.lastUpdated) });
+    });
+
+    socket.on('transactionsStatus', status => {
+      console.log(status);
+      setTransactionsStatus(status);
     });
 
     return () => {
@@ -65,6 +76,9 @@ function Content() {
   if (!transactions) return <Typography>Loading...</Typography>;
   return (
     <>
+      <Collapse in={!!transactionsStatus}>
+        <Typography>{transactionsStatus}</Typography>
+      </Collapse>
       <StyledButton
         variant="outlined"
         color="default"

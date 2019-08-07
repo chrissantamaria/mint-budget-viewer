@@ -25,9 +25,14 @@ const io = require('socket.io')(server);
   io.on('connection', socket => {
     socket.emit('transactions', transactions);
 
+    const logStatus = message => {
+      console.log(message);
+      socket.emit('transactionsStatus', message);
+    };
+
     socket.on('getTransactions', async () => {
       console.log('Client requested new transactions');
-      transactions = await getTransactions();
+      transactions = await getTransactions({ logStatus });
       socket.emit('transactions', transactions);
     });
   });
