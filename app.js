@@ -5,8 +5,19 @@ const fs = require('fs').promises;
 const { getExecutablePath } = require('./server/chrome-helpers');
 const { getTransactions } = require('./server/scraper');
 
-const server = require('http').createServer();
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
 const io = require('socket.io')(server);
+
+// Static hosting of built React files
+app.use(express.static(path.join(__dirname, 'build')));
+// Sending any additional requests to react-router
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build/index.html'));
+});
+
+server.listen(4200);
 
 (async () => {
   if (!process.env.CHROME_EXECUTABLE_PATH) {
@@ -51,8 +62,6 @@ const io = require('socket.io')(server);
     });
   });
 
-  server.listen(4200);
-
   await launchCarlo();
 })().catch(console.error);
 
@@ -66,7 +75,6 @@ const launchCarlo = async () => {
   if (process.env.NODE_ENV === 'development') {
     await app.load('http://localhost:3000/');
   } else {
-    app.serveFolder(path.join(__dirname, 'build'));
-    await app.load('index.html');
+    await app.load('http://localhost:4200/');
   }
 };
