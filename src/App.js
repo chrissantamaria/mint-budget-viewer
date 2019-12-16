@@ -97,9 +97,7 @@ function Content() {
       <Typography variant="h5" style={{ marginBottom: 16 }}>
         Last updated: {formatDate(transactions.lastUpdated, 'Pp')}
       </Typography>
-      {transactions.data.map((transaction, i) => (
-        <Typography key={i}>{JSON.stringify(transaction)}</Typography>
-      ))}
+      <pre>{JSON.stringify(transactions, null, 2)}</pre>
     </>
   );
 }
